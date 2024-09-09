@@ -1,0 +1,9 @@
+Package: num2fawords
+Type: Package
+Title: Numbers to Persian Words
+Version: 1.0
+Date: 2024-09-09
+Author: Farid Cheraghi
+Maintainer: <faridcher@gmail.com>
+Description: convert numbers to Persian words
+License: GPL-2
