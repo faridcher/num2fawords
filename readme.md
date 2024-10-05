@@ -1,6 +1,6 @@
 ## Install
 ```
-remotes::install('faridcher/num2fawords')
+remotes::install_github('faridcher/num2fawords')
 ```
 
 ## Use
