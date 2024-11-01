@@ -2,17 +2,35 @@ num2fawords <- function(x, unit=c('m^2','dm^2'), dec_sep=ifelse(length(unit)==2,
   yekan <- c("", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه" )
   dahyek <- c( "ده", "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده" )
   dahgan <- c("", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود")
-  # dahgan-yekan (dh)
-  dh <- apply(expand.grid(yekan, dahgan), 1, 
-              function(a) paste0(rev(a), 
-                                 collapse=ifelse(any(a==""),'', ' و ')))
-  dh <- c(dh[1:10], dahyek, dh[11:length(dh)])
 
-  sadgan <- c("", "یکصد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد" )
   # base 10 with exponents of 3 multiples: 3, 6, 9, 12,  etc.
   base10 <- c("", " هزار", " میلیون", " میلیارد", " تریلیون " )
   # indices correspond to the len of decimal places
   dec_places <- c("دهم", "صدم", "هزارم", "ده هزارم","صد هزارم")
+  # dahgan-yekan (dh)
+  dh <- apply(expand.grid(yekan, dahgan), 1, 
+	      function(a) paste0(rev(a), 
+				 collapse=ifelse(any(a==""),'', ' و ')))
+  dh <- c(dh[1:10], dahyek, dh[11:length(dh)])
+
+  sadgan <- c("", "یکصد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد" )
+
+# called by int2words
+.hundreds <- function(x){
+    s <- sadgan[x[3] + 1]
+    dhx <- dh[x[2] * 10 + x[1] + 1] 
+    paste(s, dhx , sep=ifelse(any(c(s, dhx)==""), "", " و "))
+}
+
+# called from num2words
+.int2words <- function(x){
+    # max n(umber) of digits is 14 (تریلیون)
+    n <- 1:15
+    d <- (as.numeric(x) %% 10^n) %/% 10^(n-1)
+    m <- matrix(d, ncol=3, byrow=T)
+    h <- apply(m, 1, .hundreds)
+    paste0(rev(paste0(h[h!=""], base10[h!=""])), collapse=" و ")
+}
 
   # unit translations
   ut <- c('m^2'='متر مربع', 'dm^2'='دسیمتر مربع', 'm'='متر', 'cm'='سانتیمتر')
@@ -51,19 +69,3 @@ num2fawords <- function(x, unit=c('m^2','dm^2'), dec_sep=ifelse(length(unit)==2,
 })
 }
 
-# called by int2words
-.hundreds <- function(x){
-    s <- sadgan[x[3] + 1]
-    dhx <- dh[x[2] *  10 + x[1] + 1] 
-    paste(s, dhx , sep=ifelse(any(c(s, dhx)==""), "", " و "))
-}
-
-# called from num2words
-.int2words <- function(x){
-    # max n(umber) of digits is 14 (تریلیون)
-    n <- 1:15
-    d <- (as.numeric(x) %% 10^n) %/% 10^(n-1)
-    m <- matrix(d, ncol=3, byrow=T)
-    h <- apply(m, 1, .hundreds)
-    paste0(rev(paste0(h[h!=""], base10[h!=""])), collapse=" و ")
-}
